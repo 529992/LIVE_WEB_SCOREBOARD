@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch Dashboard</title>
+    <style>
+        /* Container for the whole page */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Main section container */
+        .container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 20px;
+        }
+
+        /* Each player section */
+        .player-section {
+            width: 48%;
+            background-color: #fff;
+            padding: 20px;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Player section title */
+        .player-section h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        /* Time display style */
+        .time-display {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        /* Form input fields */
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            width: 80%;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        /* Buttons for controls */
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            margin: 10px 0;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Center the QR Code */
+        #qr_code {
+            display: block;
+            margin: 20px auto;
+            max-width: 100%;
+        }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        function updateStopwatches() {
+            $.getJSON('/get_times', function(data) {
+                $('#player_one_time').text(data.player_one_time);
+                $('#player_two_time').text(data.player_two_time);
+            });
+        }
+
+        // Update every 100 milliseconds (0.1 seconds)
+        setInterval(updateStopwatches, 100);
+    </script>
+</head>
+<body>
+    <h1>Stopwatch Dashboard</h1>
+    
+    <div class="container">
+        <!-- Player One Section -->
+        <div class="player-section">
+            <h2>Player One: {{ player_one_name }}</h2>
+            <p class="time-display" id="player_one_time">{{ player_one_time }}</p>
+            <form action="{{ url_for('set_player') }}" method="post">
+                <label for="name">Set Player One Name:</label>
+                <input type="text" name="name" placeholder="Enter Player One Name">
+                <input type="hidden" name="player" value="one">
+                <button type="submit">Set Name</button>
+            </form>
+            <form action="{{ url_for('start_stop') }}" method="post">
+                <button type="submit" name="player" value="one">Start/Stop Player One</button>
+            </form>
+            <form action="{{ url_for('reset') }}" method="post">
+                <button type="submit" name="player" value="one">Reset Player One</button>
+            </form>
+        </div>
+
+        <!-- Player Two Section -->
+        <div class="player-section">
+            <h2>Player Two: {{ player_two_name }}</h2>
+            <p class="time-display" id="player_two_time">{{ player_two_time }}</p>
+            <form action="{{ url_for('set_player') }}" method="post">
+                <label for="name">Set Player Two Name:</label>
+                <input type="text" name="name" placeholder="Enter Player Two Name">
+                <input type="hidden" name="player" value="two">
+                <button type="submit">Set Name</button>
+            </form>
+            <form action="{{ url_for('start_stop') }}" method="post">
+                <button type="submit" name="player" value="two">Start/Stop Player Two</button>
+            </form>
+            <form action="{{ url_for('reset') }}" method="post">
+                <button type="submit" name="player" value="two">Reset Player Two</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- QR Code for easy access -->
+    <img id="qr_code" src="qr_code.png" alt="QR Code">
+</body>
+</html>
